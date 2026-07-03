@@ -43,3 +43,9 @@ Content-Type: {{contentType}}
   "seniority": "Middle",
   "topics": "Multithreading, Entity Framework, Azure"
 }
+
+###
+
+GET {{host}}/api/me
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}

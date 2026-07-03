@@ -25,5 +25,17 @@ app.UseAuthorization();
 // 5. Map the Identity endpoints
 app.MapGroup("/api/auth")
    .MapIdentityApi<IdentityUser>();
+   
+app.MapGet("/api/me", (System.Security.Claims.ClaimsPrincipal user) =>
+{
+    var username = user.Identity?.Name ?? "Unknown User";
+    
+    return Results.Ok(new 
+    { 
+        Message = $"Hello {username}, your auth token is fully valid!",
+        Username = username
+    });
+})
+.RequireAuthorization();
 
 app.Run();
