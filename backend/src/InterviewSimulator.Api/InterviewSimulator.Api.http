@@ -1,6 +1,45 @@
-@InterviewSimulator.Api_HostAddress = http://localhost:5041
+@hostname = localhost
+@port = 5041
+@host = http://{{hostname}}:{{port}}
+@contentType = application/json
 
-GET {{InterviewSimulator.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### 1. Register a New User
+# This hits the automated ASP.NET Identity endpoint to create a user profile
+POST {{host}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "candidate@example.com",
+  "password": "Password123!"
+}
 
 ###
+
+### 2. Login to Receive Bearer Tokens
+# @name login
+# Captures the response payload so we can extract the token for protected routes
+POST {{host}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "candidate@example.com",
+  "password": "Password123!"
+}
+
+###
+
+### 3. Extract the Token from the Login Response
+# This variable grabs the accessToken from the JSON returned in Step 2
+@authToken = {{login.response.body.accessToken}}
+
+### 4. Test a Protected Endpoint (e.g., Creating an Interview Session)
+# This verification check ensures your .RequireAuthorization() guard is functioning
+POST {{host}}/api/interviews/create
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "role": ".NET Backend Developer",
+  "seniority": "Middle",
+  "topics": "Multithreading, Entity Framework, Azure"
+}
