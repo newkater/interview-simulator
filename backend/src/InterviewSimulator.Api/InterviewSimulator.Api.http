@@ -31,6 +31,7 @@ Content-Type: {{contentType}}
 ### 3. Extract the Token from the Login Response
 # This variable grabs the accessToken from the JSON returned in Step 2
 @authToken = {{login.response.body.accessToken}}
+@refreshToken = {{login.response.body.refreshToken}}
 
 ### 4. Test a Protected Endpoint (e.g., Creating an Interview Session)
 # This verification check ensures your .RequireAuthorization() guard is functioning
@@ -49,3 +50,12 @@ Content-Type: {{contentType}}
 GET {{host}}/api/me
 Authorization: Bearer {{authToken}}
 Content-Type: {{contentType}}
+
+###
+
+POST {{host}}/api/auth/refresh
+Content-Type: {{contentType}}
+
+{
+  "refreshToken": "{{refreshToken}}"
+}

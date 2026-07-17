@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from "react";
 interface AuthContextType {
   token: string | null;
   user: string | null;
-  login: (accessToken: string, email: string) => void;
+  login: (accessToken: string, refreshToken: string, email: string) => void;
   logout: () => void;
 }
 
@@ -17,10 +17,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   );
   const [user, setUser] = useState<string | null>(localStorage.getItem("user"));
 
-  const login = (accessToken: string, email: string) => {
+  const login = (accessToken: string, refreshToken: string, email: string) => {
     setToken(accessToken);
     setUser(email);
     localStorage.setItem("token", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
     localStorage.setItem("user", email);
   };
 
@@ -28,13 +29,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setToken(null);
     setUser(null);
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext value={{ token, user, login, logout }}>{children}</AuthContext>
   );
 };
 
