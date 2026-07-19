@@ -15,10 +15,19 @@ builder.Services.AddAuthorizationBuilder();
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<AppDbContext>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ViteClient", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+    });
+});
+
 var app = builder.Build();
 
 // 4. Ensure Authentication & Authorization Middlewares are registered
 // (Add these before your endpoints if they aren't already there)
+app.UseCors("ViteClient");
 app.UseAuthentication();
 app.UseAuthorization();
 
