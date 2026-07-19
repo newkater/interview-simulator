@@ -12,10 +12,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("token"),
-  );
-  const [user, setUser] = useState<string | null>(localStorage.getItem("user"));
+  const [token, setToken] = useState<string | null>(() => {
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken || storedToken === "undefined" || storedToken === "null") {
+      return null;
+    }
+    return storedToken;
+  });
+
+  const [user, setUser] = useState<string | null>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser || storedUser === "undefined" || storedUser === "null") {
+      return null;
+    }
+    return storedUser;
+  });
 
   const login = (accessToken: string, refreshToken: string, email: string) => {
     setToken(accessToken);

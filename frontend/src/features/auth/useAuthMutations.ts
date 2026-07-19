@@ -1,14 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "./AuthContext";
 import api from "../../api/api";
-import type { AuthResponse } from "./types";
+import type { AuthResponse as LoginResponse } from "./types";
 
 export const useLoginMutation = () => {
   const { login } = useAuth();
 
   return useMutation({
     mutationFn: async (credentials: Record<string, string>) => {
-      const response = await api.post<AuthResponse>("/auth/login", credentials);
+      const response = await api.post<LoginResponse>(
+        "/auth/login",
+        credentials,
+      );
       return response.data;
     },
 
@@ -26,11 +29,14 @@ export const useRegisterMutation = () => {
   const { login } = useAuth();
   return useMutation({
     mutationFn: async (registerForm: Record<string, string>) => {
-      const response = await api.post<AuthResponse>(
-        "/auth/register",
-        registerForm,
-      );
-      return response.data;
+      await api.post("/auth/register", registerForm);
+
+      const loginResponse = await api.post<LoginResponse>("/auth/login", {
+        email: registerForm.email,
+        password: registerForm.password,
+      });
+
+      return loginResponse.data;
     },
 
     onSuccess: (data, variables) => {
