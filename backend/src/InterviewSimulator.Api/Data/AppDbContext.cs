@@ -27,9 +27,5 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             .WithMany(q => q.InterviewQuestions)
             .HasForeignKey(iq => iq.QuestionId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        builder.Entity<UserAnswer>()
-            .HasIndex(ua => new { ua.InterviewSessionId, ua.InterviewQuestionId })
-            .IsUnique();
     }
 }
