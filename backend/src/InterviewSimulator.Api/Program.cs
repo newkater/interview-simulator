@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using InterviewSimulator.Api.Data;
+using InterviewSimulator.Api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddAuthorizationBuilder();
 
 // 3. Configure Identity API Endpoints (This automatically adds Bearer Token Auth!)
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+builder.Services.AddIdentityApiEndpoints<User>()
     .AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddCors(options =>
