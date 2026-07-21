@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using InterviewSimulator.Api.Data;
 using InterviewSimulator.Api.Models;
+using InterviewSimulator.Api.Features.Topics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +35,7 @@ app.UseAuthorization();
 
 // 5. Map the Identity endpoints
 app.MapGroup("/api/auth")
-   .MapIdentityApi<IdentityUser>();
+   .MapIdentityApi<User>();
    
 app.MapGet("/api/me", (System.Security.Claims.ClaimsPrincipal user) =>
 {
@@ -47,5 +48,9 @@ app.MapGet("/api/me", (System.Security.Claims.ClaimsPrincipal user) =>
     });
 })
 .RequireAuthorization();
+
+// 6. Map your custom endpoints
+CreateTopic.MapEndpoint(app);
+GetTopics.MapEndpoint(app);
 
 app.Run();

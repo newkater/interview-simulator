@@ -9,7 +9,7 @@ POST {{host}}/api/auth/register
 Content-Type: {{contentType}}
 
 {
-  "email": "candidate@example.com",
+  "email": "candidate3@example.com",
   "password": "Password123!"
 }
 
@@ -22,7 +22,7 @@ POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "candidate@example.com",
+  "email": "candidate3@example.com",
   "password": "Password123!"
 }
 
