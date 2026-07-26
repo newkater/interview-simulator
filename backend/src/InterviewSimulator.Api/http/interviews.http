@@ -1,0 +1,62 @@
+@hostname = localhost
+@port = 5041
+@host = http://{{hostname}}:{{port}}
+@contentType = application/json
+
+###
+
+# @name login
+# Captures the response payload so we can extract the token for protected routes
+POST {{host}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "candidate3@example.com",
+  "password": "Password123!"
+}
+
+###
+
+# This variable grabs the accessToken from the JSON returned 
+@authToken = {{login.response.body.accessToken}}
+@refreshToken = {{login.response.body.refreshToken}}
+
+@interviewSessionId = c29a3e7b-d1a9-48e9-86c9-a84f55753ffa
+
+###
+
+POST {{host}}/api/auth/refresh
+Content-Type: {{contentType}}
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+
+###
+# Get User Interviews
+
+GET {{host}}/api/interviews
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+###
+# Get Interview Session by ID
+
+GET {{host}}/api/interviews/{{interviewSessionId}}
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+
+###
+# Generate Interview Session
+
+POST {{host}}/api/interviews/generate
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "targetRole": ".NET Backend Developer",
+  "seniority": "Middle",
+  "topics": ["Multithreading", "Entity Framework", "Azure"]
+}
