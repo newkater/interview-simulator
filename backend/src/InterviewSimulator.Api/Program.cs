@@ -2,6 +2,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using InterviewSimulator.Api.Data;
 using InterviewSimulator.Api.Models;
+using InterviewSimulator.Api.Features.Topics;
+
+using OpenAI;
+using Microsoft.Extensions.AI;
+using Azure.AI.OpenAI;
+using Azure;
+using InterviewSimulator.Api.Features.Interviews;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +31,25 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddChatClient(services =>
+{
+    // 1. Fetch values from settings
+    var endpoint = builder.Configuration["AzureOpenAI:Endpoint"] 
+                   ?? throw new InvalidOperationException("Endpoint is missing.");
+    var apiKey = builder.Configuration["AzureOpenAI:ApiKey"] 
+                 ?? throw new InvalidOperationException("API Key is missing.");
+    var deploymentName = builder.Configuration["AzureOpenAI:DeploymentName"] 
+                         ?? throw new InvalidOperationException("DeploymentName is missing.");
+
+    // 2. Initialize the overarching Azure OpenAI client
+    var azureClient = new AzureOpenAIClient(new Uri(endpoint), new AzureKeyCredential(apiKey));
+
+    // 3. Extract the underlying target model and wrap it into the ecosystem abstraction
+    return azureClient
+        .GetChatClient(deploymentName)
+        .AsIChatClient();
+});
+
 var app = builder.Build();
 
 // 4. Ensure Authentication & Authorization Middlewares are registered
@@ -34,7 +60,7 @@ app.UseAuthorization();
 
 // 5. Map the Identity endpoints
 app.MapGroup("/api/auth")
-   .MapIdentityApi<IdentityUser>();
+   .MapIdentityApi<User>();
    
 app.MapGet("/api/me", (System.Security.Claims.ClaimsPrincipal user) =>
 {
@@ -47,5 +73,12 @@ app.MapGet("/api/me", (System.Security.Claims.ClaimsPrincipal user) =>
     });
 })
 .RequireAuthorization();
+
+// 6. Map your custom endpoints
+CreateTopic.MapEndpoint(app);
+GetTopics.MapEndpoint(app);
+GenerateInterview.MapEndpoint(app);
+GetUserInterviews.MapEndpoint(app);
+GetInterview.MapEndpoint(app);
 
 app.Run();

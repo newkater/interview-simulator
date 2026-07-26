@@ -87,6 +87,21 @@ public class InterviewSession
         InterviewQuestions.Add(interviewQuestion);
     }
 
+    public void AddInterviewQuestions(IEnumerable<InterviewQuestion> interviewQuestions)
+    {
+        if (Status != SessionStatus.Created)
+        {
+            throw new InvalidOperationException("Cannot add questions to a session that is not in the 'Created' state.");
+        }
+
+        if (InterviewQuestions.Count + interviewQuestions.Count() > QuestionCount)
+        {
+            throw new InvalidOperationException("Cannot add more questions than the specified question count.");
+        }
+
+        InterviewQuestions.AddRange(interviewQuestions);
+    }
+
     public void RemoveInterviewQuestion(InterviewQuestion interviewQuestion)
     {
         if (Status != SessionStatus.Created)
