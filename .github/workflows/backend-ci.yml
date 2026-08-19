@@ -1,0 +1,37 @@
+name: Backend CI (.NET)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'InterviewSimulator.slnx'
+      - 'global.json'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'InterviewSimulator.slnx'
+      - 'global.json'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v7
+        with:
+          global-json-file: global.json
+
+      - name: Restore dependencies
+        run: dotnet restore InterviewSimulator.slnx --nologo
+
+      - name: Build
+        run: dotnet build InterviewSimulator.slnx --nologo --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test InterviewSimulator.slnx --nologo --no-build --configuration Release --verbosity normal
