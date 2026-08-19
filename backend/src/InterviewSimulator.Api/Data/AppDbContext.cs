@@ -1,3 +1,5 @@
+using System.Reflection;
+
 using InterviewSimulator.Api.Models;
 
 using Microsoft.AspNetCore.Identity;
@@ -18,14 +20,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<InterviewSession>()
-            .Property(s => s.Status)
-            .HasConversion<string>();
-
-        builder.Entity<InterviewQuestion>()
-            .HasOne(iq => iq.Question)
-            .WithMany(q => q.InterviewQuestions)
-            .HasForeignKey(iq => iq.QuestionId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }

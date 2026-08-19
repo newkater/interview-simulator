@@ -43,7 +43,9 @@ public class GetUserInterviews
                 Score: s.Score,
                 Feedback: s.Feedback,
                 QuestionCount: s.QuestionCount,
-                Status: s.Status.ToString()))
+                Status: s.Status.ToString(),
+                TargetRole: s.TargetRole,
+                Seniority: s.Seniority))
             .ToListAsync(ct);
 
         var response = new Response(interviews);
@@ -60,4 +62,6 @@ public record InterviewDto(
     int? Score,
     string Feedback,
     int QuestionCount,
-    string Status);
+    string Status,
+    string TargetRole,
+    string Seniority);

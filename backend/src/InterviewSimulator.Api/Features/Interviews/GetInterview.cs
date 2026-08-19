@@ -19,6 +19,8 @@ public class GetInterview
         string Feedback,
         int QuestionCount,
         string Status,
+        string TargetRole,
+        string Seniority,
         List<InterviewQuestionDto> Questions);
 
     public static void MapEndpoint(IEndpointRouteBuilder app)
@@ -71,6 +73,8 @@ public class GetInterview
             Feedback: interviewSession.Feedback,
             QuestionCount: interviewSession.QuestionCount,
             Status: interviewSession.Status.ToString(),
+            TargetRole: interviewSession.TargetRole,
+            Seniority: interviewSession.Seniority,
             Questions: [.. interviewSession.InterviewQuestions
                 .OrderBy(iq => iq.SortOrder)
                 .Select(iq => new InterviewQuestionDto(
