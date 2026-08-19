@@ -3,7 +3,7 @@ import { AuthForm } from "./AuthForm";
 import { InputField } from "../../components/ui/InputField";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRegisterMutation } from "./useAuthMutations";
+import { useRegisterMutation } from "./api/useAuthMutations";
 
 export const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState("");

@@ -1,7 +1,7 @@
 import type React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLoginMutation } from "./useAuthMutations";
+import { useLoginMutation } from "./api/useAuthMutations";
 import { InputField } from "../../components/ui/InputField";
 import { AuthForm } from "./AuthForm";
 
