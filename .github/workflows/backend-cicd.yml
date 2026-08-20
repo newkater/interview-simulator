@@ -72,7 +72,7 @@ jobs:
             --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
 
       - name: Deploy API to Azure App Service
-        uses: azure/webapps-deploy@v4
+        uses: azure/webapps-deploy@v3
         with:
           app-name: "interview-simulator"
           package: ./publish
