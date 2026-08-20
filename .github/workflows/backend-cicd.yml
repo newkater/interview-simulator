@@ -26,7 +26,7 @@ jobs:
         run: dotnet restore ${{ env.API_PROJECT_PATH }} --nologo
 
       - name: Run Unit Tests
-        run: dotnet test backend/src/InterviewSimulator.Tests/InterviewSimulator.Tests.csproj --no-restore --verbosity normal --nologo
+        run: dotnet test --no-restore --verbosity normal --nologo
 
       - name: Publish API
         run: dotnet publish ${{ env.API_PROJECT_PATH }} -c Release -o ./publish --no-restore --nologo
