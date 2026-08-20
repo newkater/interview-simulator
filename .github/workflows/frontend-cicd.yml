@@ -1,0 +1,73 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "frontend/**"
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches: ["main"]
+    paths:
+      - "frontend/**"
+  workflow_dispatch:
+
+jobs:
+  # 1. CI Job: Run fast checks like linting and unit tests
+  test:
+    # Skip running tests if a PR is just being closed
+    if: github.event_name != 'pull_request' || github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24.x"
+          cache: "npm"
+          cache-dependency-path: ./frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Uncomment these if you have linting or testing scripts set up in package.json
+      # - name: Run Linting
+      #   run: npm run lint
+      #
+      # - name: Run Unit Tests
+      #   run: npm test
+
+  # 2. CD Job: Build and Deploy (Production or PR Preview)
+  build_and_deploy:
+    needs: test
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Build And Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "frontend"
+          api_location: ""
+          output_location: "dist"
+
+  # 3. Cleanup Job: Tear down the preview environment when the PR merges or closes
+  close_pull_request:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close Pull Request
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: "close"
