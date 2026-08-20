@@ -1,0 +1,78 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+env:
+  API_PROJECT_PATH: "backend/src/InterviewSimulator.Api/InterviewSimulator.Api.csproj"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.API_PROJECT_PATH }} --nologo
+
+      - name: Run Unit Tests
+        run: dotnet test --no-restore --verbosity normal --nologo
+
+      - name: Publish API
+        run: dotnet publish ${{ env.API_PROJECT_PATH }} -c Release -o ./publish --no-restore --nologo
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-app
+          path: ./publish
+          retention-days: 1
+
+  deploy:
+    needs: build-and-test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: api-app
+          path: ./publish
+
+      - name: Log in to Azure
+        uses: azure/login@v3
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Install EF Core Tools
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Apply EF Core Migrations
+        run: |
+          dotnet ef database update \
+            --project ${{ env.API_PROJECT_PATH }} \
+            --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+
+      - name: Deploy API to Azure App Service
+        uses: azure/webapps-deploy@v4
+        with:
+          app-name: "interview-simulator"
+          package: ./publish
