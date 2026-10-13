@@ -11,6 +11,8 @@ public class InterviewSession
     public string Feedback { get; set; } = string.Empty;
     public int QuestionCount { get; set; }
     public SessionStatus Status { get; set; }
+    public string TargetRole { get; set; } = string.Empty;
+    public string Seniority { get; set; } = string.Empty;
 
     public User User { get; set; } = null!;
     public List<InterviewQuestion> InterviewQuestions { get; set; } = new List<InterviewQuestion>();
@@ -20,13 +22,15 @@ public class InterviewSession
         // Required by EF Core
     }
 
-    public InterviewSession(string userId, int questionCount)
+    public InterviewSession(string userId, int questionCount, string targetRole, string seniority)
     {
         Id = Guid.NewGuid();
         UserId = userId;
         CreatedAt = DateTimeOffset.UtcNow;
         QuestionCount = questionCount;
         Status = SessionStatus.Created;
+        TargetRole = targetRole;
+        Seniority = seniority;
     }
 
     public InterviewSession(User user, int questionCount)

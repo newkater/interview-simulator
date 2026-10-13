@@ -69,7 +69,7 @@ public class GenerateInterview
             return Results.Unauthorized();
         }
 
-        var interviewSession = new InterviewSession(userId, request.QuestionCount);// A. Construct AI Prompts
+        var interviewSession = new InterviewSession(userId, request.QuestionCount, request.TargetRole, request.Seniority);
         
         var systemPrompt = @"You are an expert technical interviewer. Generate a technical interview in valid JSON format.
 Return a JSON object with a 'questions' key containing an array of objects:
@@ -133,8 +133,8 @@ Return a JSON object with a 'questions' key containing an array of objects:
 
         var responseDto = new Response(
             Id: interviewSession.Id,
-            TargetRole: request.TargetRole,
-            Seniority: request.Seniority,
+            TargetRole: interviewSession.TargetRole,
+            Seniority: interviewSession.Seniority,
             Questions: interviewQuestions.Select(q => new InterviewQuestionResponse
             {
                 Id = q.Id,

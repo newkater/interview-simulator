@@ -4,6 +4,7 @@ import { HomePage } from "./features/home/HomePage";
 import { RegisterPage } from "./features/auth/RegisterPage";
 import { DashboardPage } from "./features/dashboard/DashboardPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { MainLayout } from "./components/layout/MainLayout";
 
 function App() {
   return (
@@ -14,7 +15,9 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route element={<MainLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
