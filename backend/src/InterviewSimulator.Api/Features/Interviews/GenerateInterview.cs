@@ -12,7 +12,7 @@ namespace InterviewSimulator.Api.Features.Interviews;
 public class GenerateInterview
 {
     public record Request(string TargetRole,
-        string Seniority,
+        string? Seniority,
         List<string>? Topics,
         int QuestionCount = 5);
 
@@ -46,19 +46,19 @@ public class GenerateInterview
             });
         }
 
-        if (string.IsNullOrWhiteSpace(request.Seniority))
-        {
-            return Results.ValidationProblem(new Dictionary<string, string[]>
-            {
-                { nameof(request.Seniority), new[] { "Seniority cannot be empty." } }
-            });
-        }
-
         if (request.QuestionCount <= 0)
         {
             return Results.ValidationProblem(new Dictionary<string, string[]>
             {
                 { nameof(request.QuestionCount), new[] { "Question count must be greater than zero." } }
+            });
+        }
+
+        if (request.QuestionCount > 20)
+        {
+            return Results.ValidationProblem(new Dictionary<string, string[]>
+            {
+                { nameof(request.QuestionCount), new[] { "Question count must not exceed 20." } }
             });
         }
 
@@ -86,7 +86,11 @@ Return a JSON object with a 'questions' key containing an array of objects:
             ? string.Join(", ", request.Topics)
             : "General core competencies";
 
-        var userPrompt = $"Target Role: {request.TargetRole}\nSeniority: {request.Seniority}\nTopics: {topicsFormatted}\nQuestion Count: {request.QuestionCount}";
+        var seniorityContext = !string.IsNullOrWhiteSpace(request.Seniority) 
+            ? $"Seniority: {request.Seniority}\n" 
+            : "Seniority: Not specified (tailor to standard professional expectations for this role)\n";
+
+        var userPrompt = $"Target Role: {request.TargetRole}\n{seniorityContext}Topics: {topicsFormatted}\nQuestion Count: {request.QuestionCount}";
         
         var chatMessages = new List<ChatMessage>
         {
@@ -134,7 +138,7 @@ Return a JSON object with a 'questions' key containing an array of objects:
         var responseDto = new Response(
             Id: interviewSession.Id,
             TargetRole: interviewSession.TargetRole,
-            Seniority: interviewSession.Seniority,
+            Seniority: interviewSession.Seniority ?? string.Empty,
             Questions: interviewQuestions.Select(q => new InterviewQuestionResponse
             {
                 Id = q.Id,

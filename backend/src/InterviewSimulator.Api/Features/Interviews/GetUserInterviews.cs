@@ -45,7 +45,7 @@ public class GetUserInterviews
                 QuestionCount: s.QuestionCount,
                 Status: s.Status.ToString(),
                 TargetRole: s.TargetRole,
-                Seniority: s.Seniority))
+                Seniority: s.Seniority ?? string.Empty))
             .ToListAsync(ct);
 
         var response = new Response(interviews);

@@ -19,7 +19,6 @@ public class InterviewConfiguration : IEntityTypeConfiguration<InterviewSession>
 
         builder
             .Property(s => s.Seniority)
-            .IsRequired()
             .HasMaxLength(100);
     }
 }
