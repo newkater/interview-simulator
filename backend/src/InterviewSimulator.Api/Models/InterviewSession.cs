@@ -22,7 +22,7 @@ public class InterviewSession
         // Required by EF Core
     }
 
-    public InterviewSession(string userId, int questionCount, string targetRole, string seniority)
+    public InterviewSession(string userId, int questionCount, string targetRole, string? seniority)
     {
         Id = Guid.NewGuid();
         UserId = userId;
@@ -30,7 +30,7 @@ public class InterviewSession
         QuestionCount = questionCount;
         Status = SessionStatus.Created;
         TargetRole = targetRole;
-        Seniority = seniority;
+        Seniority = seniority ?? string.Empty;
     }
 
     public InterviewSession(User user, int questionCount)

@@ -74,7 +74,7 @@ public class GetInterview
             QuestionCount: interviewSession.QuestionCount,
             Status: interviewSession.Status.ToString(),
             TargetRole: interviewSession.TargetRole,
-            Seniority: interviewSession.Seniority,
+            Seniority: interviewSession.Seniority ?? string.Empty,
             Questions: [.. interviewSession.InterviewQuestions
                 .OrderBy(iq => iq.SortOrder)
                 .Select(iq => new InterviewQuestionDto(
